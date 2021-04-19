@@ -29,15 +29,29 @@ export async function saveSubscription(
   }
 
   if(createAction) {
-    
+    await fauna.query(
+      q.Create(
+        q.Collection('subscriptions'),
+        {data: subscriptionData}
+      )
+    )
   } else {
+    await fauna.query(
+      q.Replace(
+        q.Select(
+          "ref",
+          q.Get(
+            q.Match(
+              q.Index('subscription_by_id'),
+              subscriptionId
+            )
+          )
+        ),
+        {data: subscriptionData}
+      )
+    )
     
   }
 
-  await fauna.query(
-    q.Create(
-      q.Collection('subscriptions'),
-      {data: subscriptionData}
-    )
-  )
+  
 }
